@@ -28,13 +28,22 @@ module Tumblr
             #Probably can be refactored
             if options[:data].kind_of?(Array)
               count = 0
-              options[:data].each do |filepath|
-                options["data[#{count}]"] = File.open(filepath, 'rb').read()
-                count += 1
+              if options[:data][0] == String
+                options[:data].each do |filepath|
+                  options["data[#{count}]"] = File.open(filepath, 'rb').read()
+                  count += 1
+                end
+              else
+                options[:data].each do |file|
+                  options["data[#{count}]"] = file
+                  count += 1
+                end
               end
               options.delete(:data)
             else
-              options[:data] = File.open(options[:data],'rb').read()
+              if options[:data] == String
+                options[:data] = File.open(options[:data],'rb').read()
+              end
             end
           end
           post("v2/blog/#{blog_name}/post", options)  
